@@ -1,7 +1,7 @@
 /* main1.cc */
 /* we try to use gengetopt generated file in a C++ program */
 /* we don't use autoconf and automake vars */
-
+//for test
 #include <iostream>
 #include "stdlib.h"
 
