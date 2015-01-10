@@ -1,0 +1,7 @@
+# file sample2.ggo
+package "sample2"
+version "2.0"
+
+option  "input-opt"    i "input file"      string     yes
+option  "type-opt"     t "photo or video"  flag       off
+option  "def-opt"     - "A string option with default" string default="Hello" no
