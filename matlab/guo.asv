@@ -88,18 +88,12 @@ ix=0;iy=0;
 OutputImage=zeros(ow,oh);
 for i=1:oh
     for j=i:ow
-        ix=uvGrid(1,(i-1)*oh+j);
-        iy=uvGrid(2,(i-1)*oh+j);
-        ix1=floor(ix); iy1=floor(iy);
-        if(ix1>0 && ix1<ih && iy1>0 && iy1<iw) %left the last row and col
-            ix2=floor(ix+1); iy2=floor(iy+1);
-            OutputImage(i,j)=InputImage(ix1,iy1)*(1-(ix-ix1))*(1-(iy-iy1)) ...
-                +InputImage(ix1,iy2)*(1-(ix-ix1))*(1-(iy2-iy)) ...
-                +InputImage(ix2,iy1)*(1-(ix2-ix))*(1-(iy-iy1)) ...
-                +InputImage(ix2,iy2)*(1-(ix2-ix))*(1-(iy2-iy)) ;
-        else
-            OutputImage(i,j)=mean(mean(InputImage)); %=84.9823
+        ix=uvGrid(1,i*oh+j);
+        iy=uvGrid(2,i*oh+j);
+        if(ix>0 && ix<iw && iy>0 && iy<ih) %left the last row and col
+            ix1=floor(ix); ix2=floor(ix+1);
+            iy1=floor(iy); iy2=floor(iy+1);
+            OutputImage(i,j)=InputImage(ix1,iy1)*
         end
     end
 end
-imshow(OutputImage);
