@@ -1,6 +1,7 @@
 InputImage=imread('f2.png');
 % imshow(A);
 InputImage=rgb2gray(InputImage);
+InputImage=im2double(InputImage);
 %imshow(I);
 
 %focal length
@@ -16,9 +17,9 @@ c1=cos(pitch); s1=sin(pitch);
 yaw= 0.0;
 c2=cos(yaw); s2=sin(yaw);
 % input imag width and height
-iw= 640; ih= 480;
+ih= 480; iw= 640;
 % output imag w and h
-ow=160; oh=120;
+oh=120; ow=160;
 %ipm setting
 % ipmW=160; ipmH=120; ipmL=85; ipmR=550; ipmT=50; ipmB=380; 
 % eps=0.2*480=96;
@@ -31,14 +32,19 @@ T=[fx,0,ox;0,fy,oy;0,0,1];
 
 Vanish=T*B*A*W;
 %the size of the ipm on the input image
+% size of the region of interest ROI
+buttom=380;top=50;right=550;left=85;
 x=Vanish(1); y=Vanish(2);
 uvLimits=...
-[ x,  iw, 0, x; ...
-  y,   y, y, ih; ...
-  1,   1, 1,  1; ...
-  0,   0, 0,  0; ...
+[ x,  right, left, x; ...
+  y,    y,    y, buttom; ...
+  1,    1,    1,   1; ...
+  0,    0,    0,   0; ...
   ];
 
+% y=floor(y);
+% imshow(InputImage);
+% rectangle('Position',[left,y,x-left,buttom-y]);
 T=...
 [ 
 -c2/fx, s1*s2/fy,   ox*c2/fx-oy*s1*s2/fy-c1*s2, 0; ...
@@ -64,8 +70,8 @@ y=maxY;
 for i=1:oh
    x=minX;
    for j=1:ow
-    xyGrid(1,(i-1)*oh+j)=x;
-    xyGrid(2,(i-1)*oh+j)=y;
+    xyGrid(1,(i-1)*ow+j)=x;
+    xyGrid(2,(i-1)*ow+j)=y;
     x=x+stepCol;
    end
    y=y-stepRow;
@@ -85,11 +91,11 @@ end
 
 %replot the image
 ix=0;iy=0;
-OutputImage=zeros(ow,oh);
+OutputImage=zeros(oh,ow);
 for i=1:oh
-    for j=i:ow
-        ix=uvGrid(1,(i-1)*oh+j);
-        iy=uvGrid(2,(i-1)*oh+j);
+    for j=1:ow
+        ix=uvGrid(1,(i-1)*ow+j);
+        iy=uvGrid(2,(i-1)*ow+j);
         ix1=floor(ix); iy1=floor(iy);
         if(ix1>0 && ix1<ih && iy1>0 && iy1<iw) %left the last row and col
             ix2=floor(ix+1); iy2=floor(iy+1);
@@ -102,4 +108,5 @@ for i=1:oh
         end
     end
 end
+OutputImage=im2uint8(OutputImage);
 imshow(OutputImage);
