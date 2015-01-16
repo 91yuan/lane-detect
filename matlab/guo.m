@@ -34,7 +34,7 @@ Vanish=T*B*A*W;
 %the size of the ipm on the input image
 % size of the region of interest ROI
 buttom=380;top=50;right=550;left=85;
-x=Vanish(1); y=Vanish(2);
+x=Vanish(1); y=Vanish(2)+0.2*ih;
 uvLimits=...
 [ x,  right, left, x; ...
   y,    y,    y, buttom; ...
@@ -68,7 +68,7 @@ end
 xyGrid=ones(3,oh*ow);
 y=maxY;
 for i=1:oh
-   x=minX;
+   x=minX+stepCol/2;
    for j=1:ow
     xyGrid(1,(i-1)*ow+j)=x;
     xyGrid(2,(i-1)*ow+j)=y;
@@ -96,13 +96,14 @@ for i=1:oh
     for j=1:ow
         ix=uvGrid(1,(i-1)*ow+j);
         iy=uvGrid(2,(i-1)*ow+j);
+%         iy=i+170;
         ix1=floor(ix); iy1=floor(iy);
-        if(ix1>0 && ix1<ih && iy1>0 && iy1<iw) %left the last row and col
+        if(ix1>0 && ix1<iw && iy1>0 && iy1<ih) %left the last row and col
             ix2=floor(ix+1); iy2=floor(iy+1);
-            OutputImage(i,j)=InputImage(ix1,iy1)*(1-(ix-ix1))*(1-(iy-iy1)) ...
-                +InputImage(ix1,iy2)*(1-(ix-ix1))*(1-(iy2-iy)) ...
-                +InputImage(ix2,iy1)*(1-(ix2-ix))*(1-(iy-iy1)) ...
-                +InputImage(ix2,iy2)*(1-(ix2-ix))*(1-(iy2-iy)) ;
+            OutputImage(i,j)=InputImage(iy1,ix1)*(1-(ix-ix1))*(1-(iy-iy1)) ...
+                +InputImage(iy2,ix1)*(1-(ix-ix1))*(1-(iy2-iy)) ...
+                +InputImage(iy1,ix2)*(1-(ix2-ix))*(1-(iy-iy1)) ...
+                +InputImage(iy2,ix2)*(1-(ix2-ix))*(1-(iy2-iy)) ;
         else
             OutputImage(i,j)=mean(mean(InputImage)); %=84.9823
         end
