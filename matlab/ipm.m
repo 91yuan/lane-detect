@@ -1,3 +1,4 @@
+function [oh,ow,OutputImage]=ipm
 InputImage=imread('f2.png');
 % imshow(A);
 InputImage=rgb2gray(InputImage);
