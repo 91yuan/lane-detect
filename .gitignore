@@ -4,3 +4,4 @@
 *.ggo~
 *.o
 run
+*.asv
