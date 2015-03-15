@@ -11,6 +11,8 @@
 using namespace std;
 using namespace cv;
 
+vector<lineProperty> linesBefore;
+
 void lineDetect(Mat ROI, Mat drawImage)
 {
 	//use canny the detect contours
@@ -20,13 +22,21 @@ void lineDetect(Mat ROI, Mat drawImage)
 //	cv::imshow("Canny",image);
 	//use probabilistic Hough to detect lines
 	LineFinder finder;
-	finder.setLineLengthAndGap(23,20);
+	finder.setLineLengthAndGap(15,20);
 	finder.setMinVote(10);
-	vector<cv::Vec4i>lines=finder.findLines(image);
+	vector<cv::Vec4i>lines=finder.findLines(image);	
 	
-	vector<lineProperty>linesChosed=chooseLines(lines);
-	drawDetectedLines(drawImage,42,250,linesChosed);
-//	printLine(finder.lines);
+	cout<<"before="<<" "<<linesBefore.size()<<" ";
+	vector<lineProperty> linesChosed=chooseLines(lines);
+	linesBefore=mergeLines(linesChosed,linesBefore);
+	
+	cout<<"chosed="<<linesChosed.size()<<endl;
+	drawDetectedLines(drawImage,linesBefore);
+	printLine(linesBefore);
+	
+	lineProperty centerLine=findDirection(linesBefore);
+	drawDirection(drawImage, centerLine);
+	cv::imwrite("1.bmp",drawImage);	
 }
 
 Mat gray(Mat& imageROI)
@@ -46,11 +56,12 @@ void ProcessImage(string fileName)
 	Mat grayImage=gray(image);
 	//region of interest
 	cv::Mat ROI=grayImage(cv::Rect(42,250,546,95));
+//	drawDirection(image);
 //	cv::namedWindow("ROI");
-//	cv::imshow("ROI",ROI);
+//	cv::imshow("ROI",image);
 	
 	lineDetect(ROI, image);
-	
+//	cout<<linesBefore.size()<<endl;
 	cv::namedWindow("HoughP");
 	cv::imshow("HoughP",image);
 	cv::waitKey(0);
@@ -84,7 +95,7 @@ int main(int argc, char **argv)
 		vector<string> images=ReadLines(args_info.input_opt_arg);
 		string path="./";
 		for (int i=0; i<images.size(); i++)
-     	 {
+     	{
       	  string imageFile = path + images[i];
       	  ProcessImage(imageFile);
 		//	cout<<imageFile<<'\n';
