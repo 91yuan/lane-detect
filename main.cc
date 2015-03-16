@@ -7,6 +7,7 @@
 #include "cmdline.h"
 #include "test.h"
 #include "linefit.h"
+#include "color.h"
 
 using namespace std;
 using namespace cv;
@@ -18,71 +19,58 @@ void lineDetect(Mat ROI, Mat drawImage)
 	//use canny the detect contours
 	Mat image,result;
 	Canny(ROI,image,125,310);
-//	cv::namedWindow("Canny");
-//	cv::imshow("Canny",image);
+	cv::namedWindow("Canny");
+	cv::imshow("Canny",image);
 	//use probabilistic Hough to detect lines
 	LineFinder finder;
 	finder.setLineLengthAndGap(15,20);
 	finder.setMinVote(10);
 	vector<cv::Vec4i>lines=finder.findLines(image);	
 	
-	cout<<"before="<<" "<<linesBefore.size()<<" ";
+//	cout<<"before="<<" "<<linesBefore.size()<<" ";
 	vector<lineProperty> linesChosed=chooseLines(lines);
 	linesBefore=mergeLines(linesChosed,linesBefore);
 	
-	cout<<"chosed="<<linesChosed.size()<<endl;
+//	cout<<"chosed="<<linesChosed.size()<<endl;
 	drawDetectedLines(drawImage,linesBefore);
 	printLine(linesBefore);
 	
 	lineProperty centerLine=findDirection(linesBefore);
 	drawDirection(drawImage, centerLine);
-	cv::imwrite("1.bmp",drawImage);	
+//	cv::imwrite("1.bmp",drawImage);	
 }
 
-Mat gray(Mat& imageROI)
+void colorDetect(cv::Mat Cr, cv::Mat Cb)
 {
-	Mat ROI(imageROI.rows,imageROI.cols,CV_8U,Scalar(0));
-	for(int i=0;i<imageROI.rows ;i++)
-		for(int j=0;j<imageROI.cols;j++)
-		{
-			ROI.at<uchar>(i,j)=imageROI.at<Vec3b>(i,j)[0];
-		}
-	return ROI;
+	Mat road=detectColor(Cr, Cb);
+	cv::dilate(road,road,cv::Mat());
+	cv::erode(road,road,cv::Mat());
+	imshow("Binary",road);
 }
 
 void ProcessImage(string fileName)
 {
 	cv::Mat image=cv::imread(fileName);
-	Mat grayImage=gray(image);
 	//region of interest
-	cv::Mat ROI=grayImage(cv::Rect(42,250,546,95));
-//	drawDirection(image);
+	cv::Mat ROI;
+	vector<cv::Mat>planes;
+	cv::cvtColor(image,ROI,CV_BGR2YCrCb);
+	cv::split(ROI,planes);
+	cv::Mat Cr=planes[1](cv::Rect(42,180,546,70));
+	cv::Mat Cb=planes[2](cv::Rect(42,180,546,70));
+	cv::Mat Y =planes[0](cv::Rect(42,250,546,95));
+//	Mat grayImage=gray(ROIdown);
 //	cv::namedWindow("ROI");
-//	cv::imshow("ROI",image);
+//	cv::imshow("Y",Y);
+//	cv::imshow("Cr",Cr);
+//	cv::imshow("Cb",Cb);
 	
-	lineDetect(ROI, image);
-//	cout<<linesBefore.size()<<endl;
+	lineDetect(Y, image);
+//	colorDetect(Cr,Cb);
+
 	cv::namedWindow("HoughP");
 	cv::imshow("HoughP",image);
 	cv::waitKey(0);
-}
-
-vector<string> ReadLines(const char* filename)
-{
-  vector<string> images;
-
-  ifstream  file;
-  file.open(filename, ifstream::in);
-  char buf[5000];
-  // read lines and process
-  while (file.getline(buf, 5000))
-  {
-    string str(buf);
-    images.push_back(str);
-  }
-  // close
-  file.close();
-  return images;
 }
 
 int main(int argc, char **argv)
@@ -97,8 +85,8 @@ int main(int argc, char **argv)
 		for (int i=0; i<images.size(); i++)
      	{
       	  string imageFile = path + images[i];
+		  cout<<imageFile<<'\n';
       	  ProcessImage(imageFile);
-		//	cout<<imageFile<<'\n';
       	}
 	}else{
 		ProcessImage(args_info.input_opt_arg);

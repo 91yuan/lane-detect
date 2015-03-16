@@ -4,16 +4,24 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <vector>
+#include <algorithm>
 //#define PI 3.1415926
+#define CX 280
+#define CY 95
 
 using namespace std;
 
 struct lineProperty
 {	
-	cv::Point pt1;
-	cv::Point pt2;
+	cv::Point buttom;
+	cv::Point top;
 	float k;
 	int weight;
+
+	bool operator< (const lineProperty &a) const
+	{
+		return buttom.x<a.buttom.x;
+	}
 };
 
 vector<lineProperty> chooseLines(vector<cv::Vec4i> lines)
@@ -39,21 +47,25 @@ vector<lineProperty> chooseLines(vector<cv::Vec4i> lines)
 				k=0;
 			else
 				k=deltay/deltax;
-			//when k<0,pt1 is the buttom point
-			lp.pt1=pt1;
-			lp.pt2=pt2;
-			lp.k=k;
-			linesChosed.push_back(lp);
+			//when k<0,pt1 is the buttom point,on the left
+			if((k<0 && pt1.x<CX) || (k>0 && pt2.x>CX))
+			{
+				lp.buttom=cv::Point(int((CY-pt1.y)/k+pt1.x+0.5),CY);
+				lp.top = cv::Point(int((1-pt1.y)/k+ pt1.x+0.5), 1);
+				lp.k=k;
+				linesChosed.push_back(lp);
+			}
 			++it2;
 		}
 	}
+	sort(linesChosed.begin(),linesChosed.end());
 	return linesChosed;
 }
 
 void printCenter(lineProperty line)
 {
-	cout<<"("<<line.pt1.x<<","<<line.pt1.y<<")"<<" ";
-	cout<<"("<<line.pt2.x<<","<<line.pt2.y<<")"<<" ";
+	cout<<"("<<line.buttom.x<<","<<line.buttom.y<<")"<<" ";
+	cout<<"("<<line.top.x<<","<<line.top.y<<")"<<" ";
 	cout<<"k="<<line.k<<endl;
 }
 
@@ -67,7 +79,7 @@ vector<lineProperty> mergeLines(vector<lineProperty> linesChosed, vector<linePro
 	{
 		for(j=i+1;j<size;j++)
 		{
-			if(abs(linesChosed[i].k-linesChosed[j].k)<0.2)
+			if(abs(linesChosed[i].k-linesChosed[j].k)<0.3)
 			{
 				linesChosed.erase(linesChosed.begin()+j);
 				j--;
@@ -82,7 +94,8 @@ vector<lineProperty> mergeLines(vector<lineProperty> linesChosed, vector<linePro
 		for(j=0;j<size;j++) //j=chosed
 		{
 			//if detect the same line, leave it out
-			if(abs(linesChosed[j].k-linesBefore[i].k)<0.2)
+			//its weight is smaller than before
+			if(abs(linesChosed[j].k-linesBefore[i].k)<0.3)
 			{	break;	}
 			if(j==size-1) //if all chosed have been examinated 
 			{
@@ -99,24 +112,25 @@ vector<lineProperty> mergeLines(vector<lineProperty> linesChosed, vector<linePro
 lineProperty findDirection(vector<lineProperty> lines)
 {
 	int left=0,right=546,temp;
-	int centerX=280,centerY=95;
+	int centerX=CX,centerY=CY;
 	int il=0,ir=0,i;
 	int size=lines.size();
+	vector<lineProperty> lines2;
 	//find the right and left line
 	for(i=0;i<size;i++)
 	{
-		if(lines[i].k>0) //right,buttom is pt2
+		temp=lines[i].buttom.x;
+		if(lines[i].k>0) 
 		{
-			temp=lines[i].pt2.x;
+			
 			if(temp<right && temp>centerX)
 			{
 				right=temp;
 				ir=i;
 			}
 		}
-		else //left,buttom is pt1
+		else 
 		{
-			temp=lines[i].pt1.x;
 			if(temp>left && temp<centerX)
 			{
 				left=temp;
@@ -125,21 +139,13 @@ lineProperty findDirection(vector<lineProperty> lines)
 		}
 	}
 	//calculate the direction
-	float xl,xr;
 	int xButtom,xTop;
-	xl=(centerY-lines[il].pt2.y)/lines[il].k+lines[il].pt2.x;
-	xr=(centerY-lines[ir].pt2.y)/lines[ir].k+lines[ir].pt2.x;
-	xButtom=int((xl+xr)/2+0.5);
-
-	xl=(1-lines[il].pt2.y)/lines[il].k+lines[il].pt2.x;
-	xr=(1-lines[ir].pt2.y)/lines[ir].k+lines[ir].pt2.x;
-	xTop=int((xl+xr)/2+0.5);
+	xButtom=int((lines[il].buttom.x+lines[ir].buttom.x)/2+0.5);
+	xTop=int((lines[il].top.x+lines[ir].top.x)/2+0.5);
 	
-	cv::Point pt1(xButtom,centerY);
-	cv::Point pt2(xTop,1);
 	lineProperty centerLine;
-	centerLine.pt1=pt1;
-	centerLine.pt2=pt2;
+	centerLine.buttom=cv::Point(xButtom,centerY);
+	centerLine.top=cv::Point(xTop,1);
 
 //	printCenter(lines[il]);
 //	printCenter(lines[ir]);

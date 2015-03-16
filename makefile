@@ -3,7 +3,7 @@ LIBS = `pkg-config --cflags --libs opencv`
 run:main.o cmdline.o 
 	g++ -o run main.o cmdline.o ${LIBS}
 
-main.o:main.cc linefinder.h test.h linefit.h
+main.o:main.cc linefinder.h test.h linefit.h color.h
 	g++ -c main.cc ${LIBS}
 
 cmdline.o:cmdline.c
