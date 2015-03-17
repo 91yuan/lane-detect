@@ -1,0 +1,20 @@
+#the RGB are stored in a vector,so vector is used for the pixels in the image
+Vec3b,3 channels
+s=short, i=int, f=float, d=double
+
+# used to form the mat
+CV_8U: 8 bit, unsigned 
+CV_16SC3: 16 bit, signed, 3 channel
+
+can use +,-,abs() directly
+use "split","merge" to seperate RGB
+
+iterate though the image
+1, image.at<cv::Vec3b>(i,j)[0]=255;
+2, //use row pointer
+for(j<row)
+	uchar* data =image.ptr<uchar>(j);
+	for (i<col*3)
+		data[i]
+3, //use iterator
+cv::Mat_<cv::Vec3b>::iterator it;

@@ -78,4 +78,29 @@ vector<string> ReadLines(const char* filename)
   return images;
 }
 
+void drawDetectRegion(cv::Mat img, vector<lineProperty> linesChosed, lineProperty centerLine)
+{
+	int bx,by,tx,ty;
+	float k;
+
+	int height=30;
+	int i=centerLine.weight;
+	bx=linesChosed[i].top.x+offsetX; 
+	by=linesChosed[i].top.y+offsetY;
+	cv::Point pt1(bx,by);
+	k=linesChosed[i].k;
+	cv::Point pt2(int(-height/k+bx+0.5), by-height);
+
+	bx=linesChosed[i-1].top.x+offsetX; 
+	by=linesChosed[i-1].top.y+offsetY;
+	cv::Point pt4(bx,by);
+	k=linesChosed[i-1].k;
+	cv::Point pt3(int(-height/k+bx+0.5), by-height);
+
+	cv::line(img,pt1,pt2,CV_RGB(0,255,0));
+	cv::line(img,pt2,pt3,CV_RGB(0,255,0));
+	cv::line(img,pt3,pt4,CV_RGB(0,255,0));
+	cv::line(img,pt4,pt1,CV_RGB(0,255,0));
+}
+
 #endif

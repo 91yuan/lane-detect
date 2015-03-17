@@ -52,13 +52,13 @@ vector<lineProperty> chooseLines(vector<cv::Vec4i> lines)
 			{
 				lp.buttom=cv::Point(int((CY-pt1.y)/k+pt1.x+0.5),CY);
 				lp.top = cv::Point(int((1-pt1.y)/k+ pt1.x+0.5), 1);
+//				lp.ex = cv::Point(int((1-pt1.y)/k+ pt1.x+0.5), 1);
 				lp.k=k;
 				linesChosed.push_back(lp);
 			}
 			++it2;
 		}
 	}
-	sort(linesChosed.begin(),linesChosed.end());
 	return linesChosed;
 }
 
@@ -106,36 +106,25 @@ vector<lineProperty> mergeLines(vector<lineProperty> linesChosed, vector<linePro
 			
 		}
 	}
+	sort(linesChosed.begin(),linesChosed.end());
 	return linesChosed;
 }
 
 lineProperty findDirection(vector<lineProperty> lines)
 {
-	int left=0,right=546,temp;
+	int temp;
 	int centerX=CX,centerY=CY;
-	int il=0,ir=0,i;
+	int il=0,ir=0,i=0;
 	int size=lines.size();
-	vector<lineProperty> lines2;
 	//find the right and left line
 	for(i=0;i<size;i++)
 	{
 		temp=lines[i].buttom.x;
-		if(lines[i].k>0) 
+		if(temp>centerX)
 		{
-			
-			if(temp<right && temp>centerX)
-			{
-				right=temp;
-				ir=i;
-			}
-		}
-		else 
-		{
-			if(temp>left && temp<centerX)
-			{
-				left=temp;
-				il=i;
-			}
+			ir=i;
+			il=i-1;
+			break;
 		}
 	}
 	//calculate the direction
@@ -146,7 +135,7 @@ lineProperty findDirection(vector<lineProperty> lines)
 	lineProperty centerLine;
 	centerLine.buttom=cv::Point(xButtom,centerY);
 	centerLine.top=cv::Point(xTop,1);
-
+	centerLine.weight=ir; //use the weight to store the site of right 
 //	printCenter(lines[il]);
 //	printCenter(lines[ir]);
 	return centerLine;
