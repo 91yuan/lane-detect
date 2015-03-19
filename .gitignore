@@ -5,3 +5,6 @@
 *.o
 run
 *.asv
+*.c~
+*.h~
+Makefile~

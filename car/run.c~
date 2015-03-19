@@ -1,0 +1,7 @@
+#include "xil_io.h"
+
+void main()
+{
+	smart_car_set(10, 0);
+}
+
