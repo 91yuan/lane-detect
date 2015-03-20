@@ -7,10 +7,12 @@
 #include <iostream>
 #include "linefit.h"
 
-#define offsetX 42
-#define offsetY 250
+#define offsetX 0
+#define offsetY 0
+
 
 using namespace std;
+using namespace cv;
 
 void printLine(vector<lineProperty> linesChosed)
 {
@@ -32,7 +34,8 @@ void printCenter(lineProperty line)
 	cout<<"k="<<line.k<<endl;
 }
 */
-void drawDetectedLines(cv::Mat &image, vector<lineProperty> linesChosed, cv::Scalar color=cv::Scalar(255,0,0))
+//bule:41,240,110; red=82,90,240; green=145,54,34
+void drawDetectedLines(Mat y,Mat cr,Mat cb, vector<lineProperty> linesChosed)
 	{
 		float deltay,deltax;
 		std::vector<lineProperty>::iterator it2=linesChosed.begin();
@@ -44,7 +47,9 @@ void drawDetectedLines(cv::Mat &image, vector<lineProperty> linesChosed, cv::Sca
 			pt1.y=pt1.y+offsetY;
 			pt2.x=pt2.x+offsetX;
 			pt2.y=pt2.y+offsetY;
-			cv::line(image,pt1,pt2,color,1);
+			cv::line(y,pt1,pt2,Scalar(145),1);
+			cv::line(cr,pt1,pt2,Scalar(54),1);
+			cv::line(cb,pt1,pt2,Scalar(34),1);
 			++it2;
 
 		}
