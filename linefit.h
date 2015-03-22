@@ -6,8 +6,8 @@
 #include <vector>
 #include <algorithm>
 //#define PI 3.1415926
-#define CX 280
-#define CY 95
+#define CX 320
+#define CY 239
 
 using namespace std;
 
@@ -114,7 +114,7 @@ lineProperty findDirection(vector<lineProperty> lines)
 {
 	int temp;
 	int centerX=CX,centerY=CY;
-	int il=0,ir=0,i=0;
+	int il=-1,ir=-1,i=0;
 	int size=lines.size();
 	//find the right and left line
 	for(i=0;i<size;i++)
@@ -128,16 +128,25 @@ lineProperty findDirection(vector<lineProperty> lines)
 		}
 	}
 	//calculate the direction
-	int xButtom,xTop;
-	xButtom=int((lines[il].buttom.x+lines[ir].buttom.x)/2+0.5);
-	xTop=int((lines[il].top.x+lines[ir].top.x)/2+0.5);
+//	xButtom=int((lines[il].buttom.x+lines[ir].buttom.x)/2+0.5);
+	int left=lines[il].top.x;
+	int right=lines[ir].top.x;
+	if(il==-1) //no left line found
+		left=0;
+	if(ir==-1) //no right line found
+		right=640;
+		
+	int xTop=int((left+right)/2+0.5);
 	
 	lineProperty centerLine;
-	centerLine.buttom=cv::Point(xButtom,centerY);
+	centerLine.buttom=cv::Point(centerX,centerY);
 	centerLine.top=cv::Point(xTop,1);
-	centerLine.weight=ir; //use the weight to store the site of right 
+	centerLine.weight=ir; //use the weight to store the site of right
+	centerLine.k=(centerY-1)/(centerX-xTop); 
 //	printCenter(lines[il]);
 //	printCenter(lines[ir]);
+	cout<<lines[il].buttom.x<<" "<<lines[ir].buttom.x<<endl;
+	cout<<il<<" "<<ir<<endl;
 	return centerLine;
 }
 

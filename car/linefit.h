@@ -6,8 +6,8 @@
 #include <vector>
 #include <algorithm>
 //#define PI 3.1415926
-#define CX 280
-#define CY 95
+#define CX 320
+#define CY 239
 
 using namespace std;
 
@@ -88,7 +88,8 @@ vector<lineProperty> mergeLines(vector<lineProperty> linesChosed, vector<linePro
 		}
 	}
 	
-	int sizeB=linesBefore.size();
+	int sizeB=0;
+//	int sizeB=linesBefore.size();
 	for(i=0;i<sizeB;i++) //i=before
 	{
 		for(j=0;j<size;j++) //j=chosed
@@ -114,9 +115,10 @@ lineProperty findDirection(vector<lineProperty> lines)
 {
 	int temp;
 	int centerX=CX,centerY=CY;
-	int il=0,ir=0,i=0;
+	int il=-1,ir=-1,i=0;
 	int size=lines.size();
 	//find the right and left line
+
 	for(i=0;i<size;i++)
 	{
 		temp=lines[i].buttom.x;
@@ -128,16 +130,37 @@ lineProperty findDirection(vector<lineProperty> lines)
 		}
 	}
 	//calculate the direction
-	int xButtom,xTop;
-	xButtom=int((lines[il].buttom.x+lines[ir].buttom.x)/2+0.5);
-	xTop=int((lines[il].top.x+lines[ir].top.x)/2+0.5);
+//	xButtom=int((lines[il].buttom.x+lines[ir].buttom.x)/2+0.5);
+	int left,right;
+	if(il!=-1 && ir!=-1)
+	{
+		left=lines[il].top.x;
+		right=lines[ir].top.x;
+	}
+	else
+	{
+		if(il==-1 && ir!=-1) //no left line found
+		{left=0;right=lines[ir].top.x;}
+		if(ir==-1 && il!=-1) //no right line found
+		{right=640;left=lines[il].top.x;}
+		if(ir==-1 && il==-1 )
+		{left=centerX-1;right=centerX+1;}
+	}
 	
+	int xTop=int((left+right)/2+0.5);
+
 	lineProperty centerLine;
-	centerLine.buttom=cv::Point(xButtom,centerY);
+	centerLine.buttom=cv::Point(centerX,centerY);
 	centerLine.top=cv::Point(xTop,1);
-	centerLine.weight=ir; //use the weight to store the site of right 
+	centerLine.weight=ir; //use the weight to store the site of right
+	if(centerX-xTop==0)
+		centerLine.k=30;
+	else
+		centerLine.k=(centerY-1.0)/(centerX-xTop); 
 //	printCenter(lines[il]);
 //	printCenter(lines[ir]);
+//	cout<<lines[il].buttom.x<<" "<<lines[ir].buttom.x<<endl;
+//	cout<<il<<" "<<ir<<endl;
 	return centerLine;
 }
 

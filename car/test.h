@@ -8,7 +8,7 @@
 #include "linefit.h"
 
 #define offsetX 0
-#define offsetY 0
+#define offsetY 240
 
 
 using namespace std;
@@ -47,22 +47,25 @@ void drawDetectedLines(Mat y,Mat cr,Mat cb, vector<lineProperty> linesChosed)
 			pt1.y=pt1.y+offsetY;
 			pt2.x=pt2.x+offsetX;
 			pt2.y=pt2.y+offsetY;
-			cv::line(y,pt1,pt2,Scalar(145),1);
-			cv::line(cr,pt1,pt2,Scalar(54),1);
-			cv::line(cb,pt1,pt2,Scalar(34),1);
+			cv::line(y,pt1,pt2,Scalar(145),2);
+			cv::line(cr,pt1,pt2,Scalar(54),2);
+			cv::line(cb,pt1,pt2,Scalar(34),2);
 			++it2;
 
 		}
 	}
 
-void drawDirection(cv::Mat &image, lineProperty centerLine)
+void drawDirection(Mat y,Mat cr,Mat cb, lineProperty centerLine)
 {
 	cv::Point pt1(centerLine.buttom.x+offsetX, centerLine.buttom.y+offsetY);
 	cv::Point pt2(centerLine.top.x+offsetX, centerLine.top.y+offsetY);
 	
-	cv::circle(image, pt1 ,3 , CV_RGB(255,0,0),-1);
-	cv::circle(image, pt2 ,3 , CV_RGB(255,0,0),-1);
-	cv::line(image,pt1,pt2,CV_RGB(255,0,0));
+//	cv::circle(image, pt1 ,3 , CV_RGB(255,0,0),-1);
+//	cv::circle(image, pt2 ,3 , CV_RGB(255,0,0),-1);
+//	cv::line(image,pt1,pt2,CV_RGB(255,0,0));
+	cv::line(y,pt1,pt2,Scalar(82),2);
+	cv::line(cr,pt1,pt2,Scalar(90),2);
+	cv::line(cb,pt1,pt2,Scalar(240),2);
 }
 
 void drawDetectRegion(cv::Mat img, vector<lineProperty> linesChosed, lineProperty centerLine)

@@ -19,8 +19,8 @@ void lineDetect(Mat ROI, Mat drawImage, Mat Cr,Mat Cb)
 	//use canny the detect contours
 	Mat image,result;
 	Canny(ROI,image,125,310);
-//	cv::namedWindow("Canny");
-//	cv::imshow("Canny",image);
+	cv::namedWindow("Canny");
+	cv::imshow("Canny",image);
 	//use probabilistic Hough to detect lines
 	LineFinder finder;
 	finder.setLineLengthAndGap(15,20);
@@ -37,12 +37,13 @@ void lineDetect(Mat ROI, Mat drawImage, Mat Cr,Mat Cb)
 	
 	lineProperty centerLine=findDirection(linesBefore);
 	drawDirection(drawImage, centerLine);
+	cout<<"K="<<centerLine.k<<endl;
 //	cv::imwrite("1.bmp",drawImage);	
 //	drawDetectRegion(drawImage,linesBefore,centerLine);
-	cv::Mat road=colorDetect(Cr,Cb);
+/*	cv::Mat road=colorDetect(Cr,Cb);
 	int obs=myMask(road,centerLine,linesBefore);
 	if(obs>2)
-		drawDetectRegion(drawImage,linesBefore,centerLine);
+		drawDetectRegion(drawImage,linesBefore,centerLine);*/
 }
 
 void ProcessImage(string fileName)
@@ -53,17 +54,16 @@ void ProcessImage(string fileName)
 	vector<cv::Mat>planes;
 	cv::cvtColor(image,ROI,CV_BGR2YCrCb);
 	cv::split(ROI,planes);
-	cv::Mat Cr=planes[1](cv::Rect(42,220,546,30));
-	cv::Mat Cb=planes[2](cv::Rect(42,220,546,30));
-	cv::Mat Y =planes[0](cv::Rect(42,250,546,95));
-//	Mat grayImage=gray(ROIdown);
-//	cv::namedWindow("ROI");
+	cv::Mat Cr=planes[1](cv::Rect(0,150,639,90));
+	cv::Mat Cb=planes[2](cv::Rect(0,150,639,90));
+//	cv::Mat Y =planes[0](cv::Rect(42,250,546,95));
+	cv::Mat Y =planes[0](cv::Rect(0,240,639,239));
+//	cout<<image.rows<<" "<<image.cols<<endl;
 //	cv::imshow("Y",Y);
 //	cv::imshow("Cr",Cr);
 //	cv::imshow("Cb",Cb);
 	
 	lineDetect(Y, image,Cr,Cb);
-//	cv::Mat road=colorDetect(Cr,Cb);
 
 	cv::namedWindow("HoughP");
 	cv::imshow("HoughP",image);

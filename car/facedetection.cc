@@ -17,7 +17,7 @@
 #include <sys/stat.h>
 #include <signal.h>
 #include <unistd.h>
-
+#include <math.h>
 #include "imagePro.h"
 #include "car_move.h"
 
@@ -58,15 +58,20 @@ int convert_rgb_to_yuv_buffer(unsigned char *yuv_buffer_pointer,unsigned char *y
     return 0;
 }
 
-
 void facedetection(unsigned char * buf)
 {	
 	convert_yuv_to_rgb_buffer(buf,y_buffer, Cr_buffer, Cb_buffer);
 	Mat Yframe(480,640,CV_8UC1, y_buffer);
 	Mat Crframe(480,640,CV_8UC1,Cr_buffer);
 	Mat Cbframe(480,640,CV_8UC1,Cb_buffer);
- 
-	ProcessImage(Yframe,Crframe,Cbframe);
+ 	
+//	Canny(Yframe,Yframe,125,310);
+//	cout<<"hello"<<endl;
+	double direction=ProcessImage(Yframe,Crframe,Cbframe);
+	double degree=atan(direction);
+	car_speed_set(10, setMove(degree));
+	
+	cout<<direction<<" "<<degree<<endl;
 
 	convert_rgb_to_yuv_buffer(buf,Yframe.data, Crframe.data, Cbframe.data);            	
 	//-- Release

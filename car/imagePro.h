@@ -18,51 +18,56 @@
 using namespace std;
 using namespace cv;
 
-vector<lineProperty> linesBefore;
-
-void lineDetect(Mat Y, Mat Cr,Mat Cb)
+float lineDetect(Mat Y, Mat Cr,Mat Cb)
 {
+	//define the ROI
+//	cv::Mat Cri=Cr(cv::Rect(0,150,639,90));
+//	cv::Mat Cbi=Cb(cv::Rect(0,150,639,90));
+	cv::Mat Yi =Y(cv::Rect(0,240,639,239));
+//	cout<<"canny"<<endl;	
 	//use canny the detect contours
 	Mat result;
-	Canny(Y,result,125,310);
-
+	Canny(Yi,result,125,310);
+//	cout<<"finder"<<endl;
 	//use probabilistic Hough to detect lines
 	LineFinder finder;
 	finder.setLineLengthAndGap(15,20);
 	finder.setMinVote(10);
 	vector<cv::Vec4i>lines=finder.findLines(result);	
 	
+	vector<lineProperty> linesBefore;
 //	cout<<"before="<<" "<<linesBefore.size()<<" ";
+//	cout<<"chose"<<endl;
 	vector<lineProperty> linesChosed=chooseLines(lines);
 	linesBefore=mergeLines(linesChosed,linesBefore);
-	
+//		cout<<"draw1"<<endl;
 //	cout<<"chosed="<<linesChosed.size()<<endl;
 	drawDetectedLines(Y,Cr,Cb,linesBefore);
-/*	printLine(linesBefore);
-	
+//	printLine(linesBefore);
+//	cout<<"findline"<<endl;
 	lineProperty centerLine=findDirection(linesBefore);
-	drawDirection(drawImage, centerLine);
+//		cout<<"draw2"<<endl;
+	drawDirection(Y,Cr,Cb, centerLine);
 //	cv::imwrite("1.bmp",drawImage);	
 //	drawDetectRegion(drawImage,linesBefore,centerLine);
-	cv::Mat road=colorDetect(Cr,Cb);
+/*	cv::Mat road=colorDetect(Cr,Cb);
 	int obs=myMask(road,centerLine,linesBefore);
 	if(obs>2)
 		drawDetectRegion(drawImage,linesBefore,centerLine);
 */
+	return centerLine.k;
 }
 
-void ProcessImage(Mat Y,Mat Cr,Mat Cb)
+float ProcessImage(Mat Y,Mat Cr,Mat Cb)
 {
 	//region of interest
 /*	cv::Mat ROI;
 	vector<cv::Mat>planes;
 	cv::cvtColor(image,ROI,CV_BGR2YCrCb);
-	cv::split(ROI,planes);
-	cv::Mat Cr=planes[1](cv::Rect(42,220,546,30));
-	cv::Mat Cb=planes[2](cv::Rect(42,220,546,30));
-	cv::Mat Y =planes[0](cv::Rect(42,250,546,95));
-*/	
-	lineDetect(Y,Cr,Cb);
+	cv::split(ROI,planes);*/
+	
+	return lineDetect(Y,Cr,Cb);
+	
 }
 
 
