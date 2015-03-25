@@ -8,7 +8,7 @@
 #include "linefit.h"
 
 #define offsetX 0
-#define offsetY 240
+#define offsetY 100
 
 
 using namespace std;

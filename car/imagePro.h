@@ -20,18 +20,22 @@ using namespace cv;
 
 float lineDetect(Mat Y, Mat Cr,Mat Cb)
 {
-	//define the ROI
+	//define the RO
 //	cv::Mat Cri=Cr(cv::Rect(0,150,639,90));
 //	cv::Mat Cbi=Cb(cv::Rect(0,150,639,90));
-	cv::Mat Yi =Y(cv::Rect(0,240,639,239));
+	cv::Mat Yi =Y(cv::Rect(0,100,639,379));
+//	cv::Mat Yi=Y;
 //	cout<<"canny"<<endl;	
 	//use canny the detect contours
+	medianBlur(Y,Y,9);
+	GaussianBlur(Yi,Yi,Size(5,5),1.5);
 	Mat result;
+	imshow("Y",Yi);
 	Canny(Yi,result,125,310);
-//	cout<<"finder"<<endl;
+	imshow("Canny",result);
 	//use probabilistic Hough to detect lines
 	LineFinder finder;
-	finder.setLineLengthAndGap(15,20);
+	finder.setLineLengthAndGap(20,10);
 	finder.setMinVote(10);
 	vector<cv::Vec4i>lines=finder.findLines(result);	
 	
@@ -46,6 +50,7 @@ float lineDetect(Mat Y, Mat Cr,Mat Cb)
 //	printLine(linesBefore);
 //	cout<<"findline"<<endl;
 	lineProperty centerLine=findDirection(linesBefore);
+	printLine(linesBefore);
 //		cout<<"draw2"<<endl;
 	drawDirection(Y,Cr,Cb, centerLine);
 //	cv::imwrite("1.bmp",drawImage);	

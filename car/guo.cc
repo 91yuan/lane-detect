@@ -11,13 +11,14 @@ int main(int argc, char** argv)
 {
 	Mat frame,ROI;
 	vector<cv::Mat>planes;
-	VideoCapture cap(1);
+	VideoCapture cap(-1);
 	if(!cap.isOpened())
 	{
 		cout<<"not open"<<endl;
 		return 0;
 	}
 	bool on(true);
+	init_motor();
 	while(on)
 	{
 		if(!cap.read(frame))
@@ -30,10 +31,10 @@ int main(int argc, char** argv)
 		cv::split(ROI,planes);
 		double direction=ProcessImage(planes[0],planes[1],planes[2]);
 		double degree=atan(direction);
-//		car_speed_set(10, setMove(degree));
+		car_speed_set(7, setMove(degree));
 	
 		cout<<direction<<" "<<degree<<" "<<setMove(degree)<<endl;		
-		usleep(50000);
+//		usleep(50000);
 	}
 	cap.release();
 	return 0;

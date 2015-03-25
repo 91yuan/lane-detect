@@ -5,6 +5,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <vector>
 #include <algorithm>
+//#include "test.h"
 //#define PI 3.1415926
 #define CX 320
 #define CY 239
@@ -116,9 +117,20 @@ lineProperty findDirection(vector<lineProperty> lines)
 	int temp;
 	int centerX=CX,centerY=CY;
 	int il=-1,ir=-1,i=0;
+
+	//in case no left line
+	lineProperty lineL;
+	lineL.buttom=cv::Point(1,CY);
+	lineL.top=cv::Point(1,1);
+	lines.insert(lines.begin(),lineL);
+	//in case no right line
+	lineProperty lineR;
+	lineR.buttom=cv::Point(640,CY);
+	lineR.top=cv::Point(640,1);
+	lines.push_back(lineR);
+
 	int size=lines.size();
 	//find the right and left line
-
 	for(i=0;i<size;i++)
 	{
 		temp=lines[i].buttom.x;
@@ -132,20 +144,8 @@ lineProperty findDirection(vector<lineProperty> lines)
 	//calculate the direction
 //	xButtom=int((lines[il].buttom.x+lines[ir].buttom.x)/2+0.5);
 	int left,right;
-	if(il!=-1 && ir!=-1)
-	{
-		left=lines[il].top.x;
-		right=lines[ir].top.x;
-	}
-	else
-	{
-		if(il==-1 && ir!=-1) //no left line found
-		{left=0;right=lines[ir].top.x;}
-		if(ir==-1 && il!=-1) //no right line found
-		{right=640;left=lines[il].top.x;}
-		if(ir==-1 && il==-1 )
-		{left=centerX-1;right=centerX+1;}
-	}
+	left=lines[il].top.x;
+	right=lines[ir].top.x;
 	
 	int xTop=int((left+right)/2+0.5);
 

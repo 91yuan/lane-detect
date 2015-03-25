@@ -82,26 +82,26 @@ int setMove(double direction)
 		if(direction>1.4)
 			return 0;
 		else if(direction>1.1)
-			return 1;
-		else if(direction>0.9)
 			return 2;
-		else if(direction>0.7)
+		else if(direction>0.9)
 			return 3;
-		else 
+		else if(direction>0.7)
 			return 4;
+		else 
+			return 5;
 	}
 	else 
 	{
 		if(direction<-1.4)
 			return 0;
 		if(direction<-1.1)
-			return -1;
-		if(direction<-0.9)
 			return -2;
-		if(direction<-0.7)
+		if(direction<-0.9)
 			return -3;
-		else
+		if(direction<-0.7)
 			return -4;
+		else
+			return -5;
 	}
 }
 
