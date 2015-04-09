@@ -18,6 +18,7 @@ int main(int argc, char** argv)
 		return 0;
 	}
 	bool on(true);
+	int dir[2]={7,0};
 	init_motor();
 	while(on)
 	{
@@ -29,11 +30,11 @@ int main(int argc, char** argv)
 //		imshow("org",frame);
 		cvtColor(frame,ROI,CV_BGR2YCrCb);
 		cv::split(ROI,planes);
-		double direction=ProcessImage(planes[0],planes[1],planes[2]);
-		double degree=atan(direction);
-		car_speed_set(7, setMove(degree));
+		ProcessImage(planes[0],planes[1],planes[2], dir);
+//		double degree=atan(direction);
+		car_speed_set(dir[0], dir[1]);
 	
-		cout<<direction<<" "<<degree<<" "<<setMove(degree)<<endl;		
+		cout<<dir[0]<<" "<<dir[1]<<endl;		
 //		usleep(50000);
 	}
 	cap.release();

@@ -19,6 +19,7 @@ int main(int argc, char** argv)
 		return 0;
 	}
 	bool on(true);
+	int dir[2]={7,0};
 	while(on)
 	{
 		if(!cap.read(frame))
@@ -28,13 +29,12 @@ int main(int argc, char** argv)
 		}
 //		imshow("org",frame);
 //		imwrite("1.jpg",frame);
+//		frame=imread("11.jpg");
 		cvtColor(frame,ROI,CV_BGR2YCrCb);
 		cv::split(ROI,planes);
-		double direction=ProcessImage(planes[0],planes[1],planes[2]);
-		double degree=atan(direction);
-//		car_speed_set(10, setMove(degree));
-	
-		cout<<direction<<" "<<degree<<" "<<setMove(degree)<<endl;		
+		ProcessImage(planes[0],planes[1],planes[2], dir);
+		cout<<dir[0]<<" "<<dir[1]<<endl;	
+		
 		merge(planes,ROI);
 		cvtColor(ROI,frame,CV_YCrCb2BGR);
 

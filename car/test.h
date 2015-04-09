@@ -9,7 +9,7 @@
 
 #define offsetX 0
 #define offsetY 100
-
+//offsetY = the first row of the ROI in the image
 
 using namespace std;
 using namespace cv;
@@ -68,29 +68,33 @@ void drawDirection(Mat y,Mat cr,Mat cb, lineProperty centerLine)
 	cv::line(cb,pt1,pt2,Scalar(240),2);
 }
 
-void drawDetectRegion(cv::Mat img, vector<lineProperty> linesChosed, lineProperty centerLine)
+void drawDetectRegion(Mat y, vector<lineProperty> linesChosed, lineProperty centerLine)
 {
 	int bx,by,tx,ty;
 	float k;
 
-	int height=30;
+	int height=y.rows;
 	int i=centerLine.weight;
+	bx=linesChosed[i].buttom.x+offsetX; 
+	by=linesChosed[i].buttom.y+offsetY;
+	cv::Point pt1(bx,by);
+
 	bx=linesChosed[i].top.x+offsetX; 
 	by=linesChosed[i].top.y+offsetY;
-	cv::Point pt1(bx,by);
-	k=linesChosed[i].k;
-	cv::Point pt2(int(-height/k+bx+0.5), by-height);
+	cv::Point pt2(bx,by);
+
+	bx=linesChosed[i-1].buttom.x+offsetX; 
+	by=linesChosed[i-1].buttom.y+offsetY;
+	cv::Point pt4(bx,by);
 
 	bx=linesChosed[i-1].top.x+offsetX; 
 	by=linesChosed[i-1].top.y+offsetY;
-	cv::Point pt4(bx,by);
-	k=linesChosed[i-1].k;
-	cv::Point pt3(int(-height/k+bx+0.5), by-height);
+	cv::Point pt3(bx,by);
 
-	cv::line(img,pt1,pt2,CV_RGB(0,255,0));
-	cv::line(img,pt2,pt3,CV_RGB(0,255,0));
-	cv::line(img,pt3,pt4,CV_RGB(0,255,0));
-	cv::line(img,pt4,pt1,CV_RGB(0,255,0));
+	cv::line(y,pt1,pt2,Scalar(82),2);
+	cv::line(y,pt2,pt3,Scalar(82),2);
+	cv::line(y,pt3,pt4,Scalar(82),2);
+	cv::line(y,pt4,pt1,Scalar(82),2);
 }
 
 #endif

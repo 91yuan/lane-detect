@@ -7,14 +7,17 @@
 #include <iostream>
 #include "linefit.h"
 
+#define CX 320
+#define CY 379
+
 using namespace std;
 
 cv::Mat detectColor(cv::Mat Cr, cv::Mat Cb)
 {
 	int row=Cr.rows;
 	int col=Cr.cols;	
-	int R=Cr.at<uchar>(95,280);
-	int B=Cb.at<uchar>(95,280);
+	int R=Cr.at<uchar>(CX,CY);
+	int B=Cb.at<uchar>(CX,CY);
 	cv::Mat road(row,col,CV_8U,cv::Scalar(0));
 
 	for(int i=0;i<row;i++)
@@ -24,7 +27,7 @@ cv::Mat detectColor(cv::Mat Cr, cv::Mat Cb)
 		uchar* data =road.ptr<uchar>(i);
 		for(int j=0;j<col;j++)
 		{
-			if(abs(*(dataR++)-R)+abs(*(dataB++)-B)>4)
+			if(abs(*(dataR++)-R)+abs(*(dataB++)-B)>25)
 				*data++= 0;
 			else
 				*data++= 255;
@@ -67,34 +70,36 @@ int myMask(cv::Mat img,lineProperty line, vector<lineProperty> linesChosed )
 	int lineType = 8;
 	cv::Mat mask=cv::Mat::zeros(img.rows, img.cols, CV_8UC1);
 
-	int bx,by,tx,ty;
-	float k;
+//	int bx,by,tx,ty;
+//	float k;
 	cv::Point points[1][4];
 
-	int height=30;
+//	int height=;
 	int i=line.weight;
-
-	bx=linesChosed[i].top.x; 
+	cout<<"right line: "<<i<<endl;
+/*	bx=linesChosed[i].top.x; //change to buttom
 	by=img.rows;
-	k=linesChosed[i].k;
-	points[0][0] = cv::Point(bx,by);
-	points[0][1] = cv::Point(int(-height/k+bx+0.5), 0);
+	k=linesChosed[i].k;*/
+	points[0][0] = linesChosed[i].buttom;
+	points[0][1] = linesChosed[i].top;
 
 //	cout<<bx<<","<<-height/0.5<<img.cols<<endl;
 
-	bx=linesChosed[i-1].top.x; 
-	k=linesChosed[i-1].k;
-	points[0][3] =cv::Point(bx,by);
-	points[0][2] = cv::Point(int(-height/k+bx+0.5), 0);
+//	bx=linesChosed[i-1].top.x; 
+//	k=linesChosed[i-1].k;
+	points[0][2] = linesChosed[i-1].top;
+	points[0][3] = linesChosed[i-1].buttom;
 //	cout<<bx<<","<<int(-height/k+bx+0.5)<<endl;
 
 	const cv::Point* ppt[1] = { points[0] };
 	int npt[] = { 4 };
 
 	cv::fillPoly( mask, ppt, npt, 1, cv::Scalar(255), lineType );
+//	imshow("before",mask);
+	cout<<"mask wide "<<mask.cols<<" mask height "<<mask.rows<<endl;
 	mask=mask & img;
-
-	int obst=detectObstacle(mask, points[0][1].x-points[0][2].x-5);
+	imshow("mask",mask);
+	int obst=detectObstacle(mask, (int)(points[0][1].x-points[0][2].x)/2);
 	return obst;
  }
 
